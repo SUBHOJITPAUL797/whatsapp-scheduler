@@ -1,5 +1,8 @@
 FROM node:20-alpine
 
+# Install OpenSSL for Prisma
+RUN apk add --no-cache openssl
+
 WORKDIR /app
 
 # Install system dependencies for Baileys/Puppeteer if needed (Baileys doesn't need Puppeteer, but sometimes needs libs)
