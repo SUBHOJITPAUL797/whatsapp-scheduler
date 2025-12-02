@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Group {
+  id        String   @id @default(uuid())
+  jid       String   @unique // WhatsApp Group JID (e.g., 123456@g.us)
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Campaign {
+  id          String     @id @default(uuid())
+  name        String
+  messageText String
+  startTime   String     // "HH:mm" (24h)
+  endTime     String     // "HH:mm" (24h) - Exclusive
+  lastMinute  Int        @default(0) // 0-10
+  isActive    Boolean    @default(true)
+  groupId     String?    // Optional: link to a specific group if needed, or broadcast to all
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deliveries  Delivery[]
+}
+
+model Delivery {
+  id         String   @id @default(uuid())
+  campaignId String
+  hourKey    String   // Format: "YYYY-MM-DD-HH"
+  sentAt     DateTime @default(now())
+  status     String   // "SENT", "FAILED"
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+
+  @@unique([campaignId, hourKey]) // Ensure only one send per campaign per hour
+}
