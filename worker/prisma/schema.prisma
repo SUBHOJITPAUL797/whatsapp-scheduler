@@ -39,3 +39,8 @@ model Delivery {
 
   @@unique([campaignId, hourKey]) // Ensure only one send per campaign per hour
 }
+
+model Session {
+  id   String @id
+  data String @db.Text
+}

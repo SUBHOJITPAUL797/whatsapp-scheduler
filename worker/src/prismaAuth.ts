@@ -46,7 +46,7 @@ export const usePrismaAuthState = async (prisma: PrismaClient) => {
                         ids.map(async (id) => {
                             const value = await readData(`${type}-${id}`);
                             if (type === 'app-state-sync-key' && value) {
-                                data[id] = SignalDataTypeMap[type](value);
+                                data[id] = value;
                             } else if (value) {
                                 data[id] = value;
                             }
