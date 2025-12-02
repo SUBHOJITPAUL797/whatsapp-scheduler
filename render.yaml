@@ -16,7 +16,6 @@ services:
         value: 20.11.0
 
   # Worker Service (Web Service - Docker)
-  # Using Docker is safer to ensure all files (like prisma schema) are present and built correctly.
   - type: web
     name: whatsapp-worker
     env: docker
@@ -30,15 +29,14 @@ services:
       - key: PORT
         value: 10000
 
-  # Frontend Service (Static Site)
-  # Static Sites are best for React/Vite on Render.
-  - type: static
+  # Frontend Service (Web Service - Docker)
+  # "type: static" caused an error, so we use "type: web" with Docker (Nginx).
+  # This serves the static files via Nginx.
+  - type: web
     name: whatsapp-frontend
-    env: static
+    env: docker
     plan: free
     rootDir: frontend
-    buildCommand: npm install && npm run build
-    publishDir: dist
     envVars:
       - key: VITE_API_HOST
         fromService:
