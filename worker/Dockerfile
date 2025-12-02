@@ -6,7 +6,7 @@ WORKDIR /app
 # Baileys is pure JS/TS, so usually fine.
 
 COPY package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copy shared prisma schema
 COPY prisma ./prisma/
