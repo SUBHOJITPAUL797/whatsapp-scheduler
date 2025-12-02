@@ -1,5 +1,5 @@
 services:
-  # Backend Service
+  # Backend Service (Web Service - Node)
   - type: web
     name: whatsapp-backend
     env: node
@@ -15,28 +15,30 @@ services:
       - key: NODE_VERSION
         value: 20.11.0
 
-  # Worker Service (Now a Web Service for Free Tier)
+  # Worker Service (Web Service - Docker)
+  # Using Docker is safer to ensure all files (like prisma schema) are present and built correctly.
   - type: web
     name: whatsapp-worker
-    env: node
+    env: docker
     plan: free
     rootDir: worker
-    buildCommand: npm install && npx prisma generate && npm run build
-    startCommand: npm start
     envVars:
       - key: DATABASE_URL
         fromDatabase:
           name: whatsapp-db
           property: connectionString
-      - key: NODE_VERSION
-        value: 20.11.0
+      - key: PORT
+        value: 10000
 
-  # Frontend Service
-  - type: web
+  # Frontend Service (Static Site)
+  # Static Sites are best for React/Vite on Render.
+  - type: static
     name: whatsapp-frontend
-    env: docker
+    env: static
     plan: free
     rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishDir: dist
     envVars:
       - key: VITE_API_HOST
         fromService:
