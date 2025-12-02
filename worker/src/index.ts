@@ -5,6 +5,7 @@ import pino from 'pino';
 import { toZonedTime, format } from 'date-fns-tz';
 import { usePrismaAuthState } from './prismaAuth';
 import express from 'express';
+import qrcode from 'qrcode-terminal';
 
 const prisma = new PrismaClient();
 const logger = pino({ level: 'info' });
@@ -34,7 +35,7 @@ async function connectToWhatsApp() {
 
     const sock = makeWASocket({
         auth: state,
-        printQRInTerminal: true,
+        printQRInTerminal: false,
         logger: logger as any,
         browser: ["WhatsApp Scheduler", "Chrome", "1.0.0"]
     });
@@ -42,7 +43,13 @@ async function connectToWhatsApp() {
     sock.ev.on('creds.update', saveCreds);
 
     sock.ev.on('connection.update', (update) => {
-        const { connection, lastDisconnect } = update;
+        const { connection, lastDisconnect, qr } = update;
+
+        if (qr) {
+            console.log('QR Code received, scan please:');
+            qrcode.generate(qr, { small: true });
+        }
+
         if (connection === 'close') {
             const shouldReconnect = (lastDisconnect?.error as any)?.output?.statusCode !== DisconnectReason.loggedOut;
             console.log('connection closed due to ', lastDisconnect?.error, ', reconnecting ', shouldReconnect);
