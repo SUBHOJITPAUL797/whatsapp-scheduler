@@ -41,6 +41,6 @@ model Delivery {
 }
 
 model Session {
-  id    String @id
-  data  String @db.Text // JSON string of the session data
+  id   String @id
+  data String @db.Text
 }
