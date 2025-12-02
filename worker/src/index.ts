@@ -4,12 +4,30 @@ import cron from 'node-cron';
 import pino from 'pino';
 import { toZonedTime, format } from 'date-fns-tz';
 import { usePrismaAuthState } from './prismaAuth';
+import express from 'express';
 
 const prisma = new PrismaClient();
 const logger = pino({ level: 'info' });
 
 // Timezone Configuration
 const TIMEZONE = 'Asia/Kolkata';
+
+// DUMMY HTTP SERVER FOR RENDER FREE TIER
+// Render Web Services must bind to a port.
+const app = express();
+const PORT = process.env.PORT || 10000;
+
+app.get('/', (req, res) => {
+    res.send('WhatsApp Worker is running!');
+});
+
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+});
+
+app.listen(PORT, () => {
+    console.log(`Worker HTTP server listening on port ${PORT}`);
+});
 
 async function connectToWhatsApp() {
     const { state, saveCreds } = await usePrismaAuthState(prisma);

@@ -15,15 +15,14 @@ services:
       - key: NODE_VERSION
         value: 20.11.0
 
-  # Worker Service (Background)
-  - type: worker
+  # Worker Service (Now a Web Service for Free Tier)
+  - type: web
     name: whatsapp-worker
     env: node
     plan: free
     rootDir: worker
     buildCommand: npm install && npx prisma generate && npm run build
     startCommand: npm start
-    # Removed disk to support Free Tier. Auth is now in DB.
     envVars:
       - key: DATABASE_URL
         fromDatabase:
