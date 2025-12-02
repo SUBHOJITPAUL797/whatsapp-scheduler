@@ -21,4 +21,4 @@ COPY . .
 RUN npx prisma generate
 RUN npm run build
 
-CMD ["npm", "start"]
+CMD ["sh", "-c", "npx prisma db push && npm start"]
