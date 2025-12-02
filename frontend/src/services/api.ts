@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+// Render provides VITE_API_HOST (domain only) via render.yaml
+// Or we can assume relative path if served from same domain, but here they are different services.
+// Let's try to construct it.
+const apiDomain = import.meta.env.VITE_API_HOST;
+const API_URL = apiDomain ? `https://${apiDomain}` : (import.meta.env.VITE_API_URL || 'http://localhost:3000');
 
 const api = axios.create({
     baseURL: API_URL,

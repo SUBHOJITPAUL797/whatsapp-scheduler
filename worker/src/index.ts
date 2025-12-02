@@ -1,24 +1,18 @@
-import makeWASocket, { DisconnectReason, useMultiFileAuthState } from '@whiskeysockets/baileys';
+import makeWASocket, { DisconnectReason } from '@whiskeysockets/baileys';
 import { PrismaClient } from '@prisma/client';
 import cron from 'node-cron';
 import pino from 'pino';
-import fs from 'fs';
 import { toZonedTime, format } from 'date-fns-tz';
+import { usePrismaAuthState } from './prismaAuth';
 
 const prisma = new PrismaClient();
 const logger = pino({ level: 'info' });
-
-// Ensure auth directory exists (for Render persistence)
-const AUTH_DIR = process.env.AUTH_DIR || '/data/auth';
-if (!fs.existsSync(AUTH_DIR)) {
-    fs.mkdirSync(AUTH_DIR, { recursive: true });
-}
 
 // Timezone Configuration
 const TIMEZONE = 'Asia/Kolkata';
 
 async function connectToWhatsApp() {
-    const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
+    const { state, saveCreds } = await usePrismaAuthState(prisma);
 
     const sock = makeWASocket({
         auth: state,
@@ -163,8 +157,6 @@ async function runScheduler() {
     socket = await connectToWhatsApp();
 
     // Schedule cron: Run at minute 0 of every hour
-    // Note: cron runs on server time. If server is UTC, '0 * * * *' runs at top of every hour UTC, which is also top of every hour IST (just shifted).
-    // So '0 * * * *' is fine.
     cron.schedule('0 * * * *', () => {
         runScheduler();
     });
