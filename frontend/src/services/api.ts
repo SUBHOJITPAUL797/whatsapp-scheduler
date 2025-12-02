@@ -3,6 +3,8 @@ import axios from 'axios';
 // Render provides VITE_API_HOST via render.yaml (injected into window.env at runtime)
 // Or we fallback to import.meta.env (dev) or localhost
 const apiHost = window.env?.VITE_API_HOST || import.meta.env.VITE_API_HOST;
+console.log('Frontend Config:', { windowEnv: window.env, importMeta: import.meta.env, resolvedHost: apiHost });
+
 const API_URL = apiHost
     ? (apiHost.startsWith('http') ? apiHost : `https://${apiHost}`)
     : 'http://localhost:3000';
